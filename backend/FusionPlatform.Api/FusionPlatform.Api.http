@@ -1,0 +1,31 @@
+@baseUrl = http://localhost:5189
+
+### GET - Get all products
+GET {{baseUrl}}/api/products
+Accept: application/json
+
+###
+
+### POST - Create product
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+{
+  "name": "Monitor",
+  "price": 15000
+}
+
+###
+
+### PUT - Update product
+# PUT {{baseUrl}}/api/products/4
+# Content-Type: application/json
+#
+# {
+#   "name": "4K Monitor",
+#   "price": 18000
+# }
+
+###
+
+### DELETE - Delete product
+# DELETE {{baseUrl}}/api/products/4
