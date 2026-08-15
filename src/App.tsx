@@ -28,7 +28,7 @@ function App() {
   const [showFlag, setShowFlag] = useState(false)
   const [flagKey, setFlagKey] = useState(0)
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ""
 
   // Load products and system status
   useEffect(() => {
