@@ -1,0 +1,13 @@
+services:
+  frontend:
+    build: .
+    ports:
+      - "8081:80"
+
+  api:
+    build:
+      context: ./backend/FusionPlatform.Api
+    ports:
+      - "5189:8080"
+    environment:
+      ConnectionStrings__DefaultConnection: ${DB_CONNECTION_STRING}
