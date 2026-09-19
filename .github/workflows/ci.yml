@@ -1,0 +1,43 @@
+name: Fusion Platform CI
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore backend
+        run: dotnet restore backend/FusionPlatform.Api/FusionPlatform.Api.csproj
+
+      - name: Build backend
+        run: dotnet build backend/FusionPlatform.Api/FusionPlatform.Api.csproj --no-restore --configuration Release
+
+      - name: Build Docker images
+        run: docker compose build
