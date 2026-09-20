@@ -24,6 +24,12 @@ jobs:
           Write-Host "=== DOCKER ==="
           & "C:\Users\HP\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe" --version
 
+      - name: Check Docker daemon
+        shell: powershell
+        run: |
+          Write-Host "=== DOCKER DAEMON ==="
+          & "C:\Users\HP\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe" info --format '{{.ServerVersion}}'
+
       - name: Check kubectl
         shell: powershell
         run: |
@@ -38,6 +44,11 @@ jobs:
 
       - name: Check Fusion PRE-PROD
         shell: powershell
+        env:
+          MINIKUBE_HOME: C:\Users\HP\.minikube
+          KUBECONFIG: C:\Users\HP\.kube\config
         run: |
           Write-Host "=== MINIKUBE PRE-PROD STATUS ==="
+          Write-Host "MINIKUBE_HOME=$env:MINIKUBE_HOME"
+          Write-Host "KUBECONFIG=$env:KUBECONFIG"
           & "C:\Program Files\Kubernetes\Minikube\minikube.exe" -p fusion-preprod status
