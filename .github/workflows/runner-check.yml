@@ -1,6 +1,9 @@
-name: Runner Check
+name: Self-Hosted Runner Check
 
 on:
+  push:
+    branches:
+      - develop
   workflow_dispatch:
 
 jobs:
