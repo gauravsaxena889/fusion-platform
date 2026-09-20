@@ -22,22 +22,22 @@ jobs:
         shell: powershell
         run: |
           Write-Host "=== DOCKER ==="
-          docker --version
+          & "C:\Users\HP\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe" --version
 
       - name: Check kubectl
         shell: powershell
         run: |
           Write-Host "=== KUBECTL ==="
-          kubectl version --client
+          & "C:\Users\HP\AppData\Local\Programs\DockerDesktop\resources\bin\kubectl.exe" version --client
 
       - name: Check Minikube
         shell: powershell
         run: |
           Write-Host "=== MINIKUBE ==="
-          minikube version
+          & "C:\Program Files\Kubernetes\Minikube\minikube.exe" version
 
       - name: Check Fusion PRE-PROD
         shell: powershell
         run: |
           Write-Host "=== MINIKUBE PRE-PROD STATUS ==="
-          minikube -p fusion-preprod status
+          & "C:\Program Files\Kubernetes\Minikube\minikube.exe" -p fusion-preprod status
