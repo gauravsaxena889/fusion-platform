@@ -70,7 +70,7 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/fusion-platform-api:${{ github.sha }}
             ghcr.io/${{ github.repository_owner }}/fusion-platform-api:develop
 
-    deploy-preprod:
+  deploy-preprod:
     needs: build-test-publish
     if: ${{ github.event_name == 'push' && needs.build-test-publish.result == 'success' }}
     runs-on: [self-hosted, Windows, X64]
