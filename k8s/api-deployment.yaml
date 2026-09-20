@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fusion-api
+  namespace: fusion-preprod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fusion-api
+  template:
+    metadata:
+      labels:
+        app: fusion-api
+    spec:
+      containers:
+        - name: fusion-api
+          image: ghcr.io/gauravsaxena889/fusion-platform-api:develop
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: fusion-api-secret

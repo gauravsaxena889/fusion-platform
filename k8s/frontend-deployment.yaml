@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fusion-frontend
+  namespace: fusion-preprod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fusion-frontend
+  template:
+    metadata:
+      labels:
+        app: fusion-frontend
+    spec:
+      containers:
+        - name: fusion-frontend
+          image: ghcr.io/gauravsaxena889/fusion-platform-frontend:develop
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
