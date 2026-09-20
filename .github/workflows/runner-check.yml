@@ -1,0 +1,43 @@
+name: Self-Hosted Runner Check
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+jobs:
+  runner-check:
+    runs-on: [self-hosted, Windows, X64]
+
+    steps:
+      - name: Check runner identity
+        shell: powershell
+        run: |
+          Write-Host "=== RUNNER IDENTITY ==="
+          Write-Host "User: $env:USERNAME"
+          Write-Host "Computer: $env:COMPUTERNAME"
+
+      - name: Check Docker
+        shell: powershell
+        run: |
+          Write-Host "=== DOCKER ==="
+          docker --version
+
+      - name: Check kubectl
+        shell: powershell
+        run: |
+          Write-Host "=== KUBECTL ==="
+          kubectl version --client
+
+      - name: Check Minikube
+        shell: powershell
+        run: |
+          Write-Host "=== MINIKUBE ==="
+          minikube version
+
+      - name: Check Fusion PRE-PROD
+        shell: powershell
+        run: |
+          Write-Host "=== MINIKUBE PRE-PROD STATUS ==="
+          minikube -p fusion-preprod status
