@@ -1,0 +1,79 @@
+name: Deploy PRE-PROD
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-preprod:
+    runs-on: [self-hosted, Windows, X64]
+
+    env:
+      MINIKUBE_HOME: C:/Users/HP/.minikube
+      KUBECONFIG: C:/Users/HP/.kube/config
+      MINIKUBE_EXE: C:\Program Files\Kubernetes\Minikube\minikube.exe
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Verify runner and Minikube
+        shell: powershell
+        run: |
+          Write-Host "=== RUNNER ==="
+          Write-Host "Computer: $env:COMPUTERNAME"
+          Write-Host "User: $env:USERNAME"
+
+          Write-Host "=== MINIKUBE ==="
+          & "$env:MINIKUBE_EXE" version
+
+          Write-Host "=== PRE-PROD PROFILE ==="
+          & "$env:MINIKUBE_EXE" -p fusion-preprod status
+
+      - name: Apply Kubernetes manifests
+        shell: powershell
+        run: |
+          Write-Host "=== APPLY KUBERNETES MANIFESTS ==="
+
+          & "$env:MINIKUBE_EXE" -p fusion-preprod kubectl -- apply -f k8s/namespace.yaml
+          & "$env:MINIKUBE_EXE" -p fusion-preprod kubectl -- apply -f k8s/api-deployment.yaml
+          & "$env:MINIKUBE_EXE" -p fusion-preprod kubectl -- apply -f k8s/api-service.yaml
+          & "$env:MINIKUBE_EXE" -p fusion-preprod kubectl -- apply -f k8s/frontend-deployment.yaml
+          & "$env:MINIKUBE_EXE" -p fusion-preprod kubectl -- apply -f k8s/frontend-service.yaml
+          & "$env:MINIKUBE_EXE" -p fusion-preprod kubectl -- apply -f k8s/ingress.yaml
+
+      - name: Deploy exact commit images
+        shell: powershell
+        run: |
+          Write-Host "=== IMAGE TAG ==="
+          Write-Host "$env:GITHUB_SHA"
+
+          & "$env:MINIKUBE_EXE" -p fusion-preprod kubectl -- -n fusion-preprod set image deployment/fusion-api `
+            fusion-api=ghcr.io/gauravsaxena889/fusion-platform-api:$env:GITHUB_SHA
+
+          & "$env:MINIKUBE_EXE" -p fusion-preprod kubectl -- -n fusion-preprod set image deployment/fusion-frontend `
+            fusion-frontend=ghcr.io/gauravsaxena889/fusion-platform-frontend:$env:GITHUB_SHA
+
+      - name: Wait for API rollout
+        shell: powershell
+        run: |
+          & "$env:MINIKUBE_EXE" -p fusion-preprod kubectl -- -n fusion-preprod rollout status deployment/fusion-api --timeout=180s
+
+      - name: Wait for frontend rollout
+        shell: powershell
+        run: |
+          & "$env:MINIKUBE_EXE" -p fusion-preprod kubectl -- -n fusion-preprod rollout status deployment/fusion-frontend --timeout=180s
+
+      - name: Verify PRE-PROD
+        shell: powershell
+        run: |
+          Write-Host "=== PODS ==="
+          & "$env:MINIKUBE_EXE" -p fusion-preprod kubectl -- -n fusion-preprod get pods -o wide
+
+          Write-Host "=== SERVICES ==="
+          & "$env:MINIKUBE_EXE" -p fusion-preprod kubectl -- -n fusion-preprod get services
+
+          Write-Host "=== INGRESS ==="
+          & "$env:MINIKUBE_EXE" -p fusion-preprod kubectl -- -n fusion-preprod get ingress
+
+          Write-Host "=== DEPLOYMENTS ==="
+          & "$env:MINIKUBE_EXE" -p fusion-preprod kubectl -- -n fusion-preprod get deployments
